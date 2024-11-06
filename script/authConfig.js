@@ -3,7 +3,7 @@ const msalConfig = {
     auth: {
         clientId: "44acfc9f-e476-4ac3-9d30-7c8384ecfd48", //  Azure AD App's Client ID
       authority: "https://login.microsoftonline.com/c9b9cb50-3644-4db4-a267-fa84df2f4ceb", //Tenant ID
-      redirectUri: "http://localhost:3000/index.html",
+      redirectUri: "https://teressantshangase.github.io/ValueCalculator/",
     }
 };
 
