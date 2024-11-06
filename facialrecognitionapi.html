@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://alcdn.msauth.net/browser/2.27.0/js/msal-browser.min.js"></script>
+    <script src="script/authConfig.js"></script>
+    <title>Facial Recognition API Value Calculator</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #141D26;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar with Logo and Brand */
+        .navbar {
+            background-color: #81BCB3;
+            padding: 10px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        /* Calculator and Results Container */
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 50px auto;
+            width: 80%;
+        }
+
+        /* Calculator form */
+        .calculator {
+            width: 45%;
+            background-color: #ffffff;
+            padding: 30px 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333333;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            color: #555555;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 30px;
+            width: 100%;
+            padding: 15px;
+            background-color: #81BCB3;
+            border: none;
+            color: #ffffff;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Result section */
+        .result {
+            margin-top: 30px;
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #d4edda;
+            border-radius: 4px;
+            color: #155724;
+            width: 45%;
+        }
+
+        .result h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar with Logo and Brand -->
+    <div class="navbar">
+        <span class="back-arrow" onclick="window.history.back()">←</span>
+        <div class="logo-container">
+            <a href="mtnapi.html">
+                <img src="img/chenosislogo.png" alt="Chenosis Logo" class="logo">
+            </a>
+        </div>
+    </div>
+
+    <!-- Calculator and Results Container -->
+    <div class="flex-container">
+        <!-- Calculator form -->
+        <div class="calculator">
+            <h2> Facial Recognition API Value Calculator </h2>
+
+            <label for="averageIncidentCost">Average Cost of Security Incident ($):</label>
+            <input type="number" id="averageIncidentCost" value="5000">
+
+            <label for="incidentVolume">Volume of Security Incidents per Year:</label>
+            <input type="number" id="incidentVolume" value="100">
+
+            <label for="reductionPercentage">Expected Reduction Percentage (%):</label>
+            <input type="number" id="reductionPercentage" value="50">
+
+            <label for="solutionCost">Annual Cost of Solution ($):</label>
+            <input type="number" id="solutionCost" value="30000">
+
+            <button onclick="calculateValue()">Calculate Value</button>
+        </div>
+
+        <!-- Result section -->
+        <div class="result" id="results" style="display:none;">
+            <h3>Calculation Results</h3>
+        </div>
+    </div>
+
+    <script>
+        // Calculate the value and show results
+        function calculateValue() {
+            var averageIncidentCost = parseFloat(document.getElementById('averageIncidentCost').value) || 0;
+            var incidentVolume = parseFloat(document.getElementById('incidentVolume').value) || 0;
+            var reductionPercentage = parseFloat(document.getElementById('reductionPercentage').value) || 0;
+            var solutionCost = parseFloat(document.getElementById('solutionCost').value) || 0;
+
+            var currentAnnualIncidentCosts = averageIncidentCost * incidentVolume;
+            var annualSavings = currentAnnualIncidentCosts * (reductionPercentage / 100);
+            var netAnnualBenefit = annualSavings - solutionCost;
+            var roi = (netAnnualBenefit / solutionCost) * 100;
+            var paybackPeriod = (solutionCost / annualSavings) * 12;
+
+            roi = roi < 0 ? 0 : roi;
+            paybackPeriod = paybackPeriod < 0 ? 0 : paybackPeriod;
+
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML =
+                '<h3>Calculation Results</h3>' +
+                '<p><strong>Current Annual Incident Costs:</strong> $' + numberWithCommas(currentAnnualIncidentCosts.toFixed(2)) + '</p>' +
+                '<p><strong>Annual Savings:</strong> $' + numberWithCommas(annualSavings.toFixed(2)) + '</p>' +
+                '<p><strong>Net Annual Benefit:</strong> $' + numberWithCommas(netAnnualBenefit.toFixed(2)) + '</p>' +
+                '<p><strong>Return on Investment (ROI):</strong> ' + roi.toFixed(2) + '%</p>' +
+                '<p><strong>Payback Period:</strong> ' + paybackPeriod.toFixed(1) + ' months</p>';
+        }
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    </script>
+</body>
+</html>

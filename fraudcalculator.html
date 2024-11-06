@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://alcdn.msauth.net/browser/2.27.0/js/msal-browser.min.js"></script>
+    <script src="script/authConfig.js"></script>
+    <title>Fraud Calculator</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #141D26;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar with Logo and Brand */
+        .navbar {
+            background-color: #81BCB3;
+            padding: 10px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .back-arrow {
+            color: black;
+            font-size: 24px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        /* API options section */
+        .api-container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .api-item {
+            display: inline-block;
+            margin: 10px;
+            background-color: #81BCB3;
+            color: black;
+            padding: 20px 40px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .api-item input {
+            margin-right: 8px;
+        }
+
+        .api-item:hover {
+            background-color: #6a9e9a;
+        }
+
+        /* Calculator and Results Container */
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 50px auto;
+            width: 80%;
+        }
+
+        /* Calculator form */
+        .calculator {
+            width: 45%;
+            background-color: #ffffff;
+            padding: 30px 40px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333333;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            color: #555555;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 30px;
+            width: 100%;
+            padding: 15px;
+            background-color: #81BCB3;
+            border: none;
+            color: #ffffff;
+            font-size: 18px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Result section */
+        .result {
+            margin-top: 30px;
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #d4edda;
+            border-radius: 4px;
+            color: #155724;
+            width: 45%;
+        }
+
+        .result h3 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .result p {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar with Logo and Brand -->
+    <div class="navbar">
+        <span class="back-arrow" onclick="window.history.back()">←</span>
+        <div class="logo-container">
+            <a href="mtnapi.html">
+                <img src="img/chenosislogo.png" alt="Chenosis Logo" class="logo">
+            </a>
+        </div>
+    </div>
+    
+    <!-- API options section -->
+    <div class="api-container">
+        <div class="api-item">
+            <input type="checkbox" id="simSwapAPI" onchange="updateFraudReduction()"> SimSwap 
+        </div>
+        <div class="api-item">
+            <input type="checkbox" id="numberRecycle" onchange="updateFraudReduction()"> Number Recycle
+        </div>
+        <div class="api-item">
+            <input type="checkbox" id="simActivity" onchange="updateFraudReduction()"> Sim Activity
+        </div>
+        <div class="api-item">
+            <input type="checkbox" id="imeiFraud" onchange="updateFraudReduction()"> IMEI Fraud
+        </div>
+        <div class="api-item">
+            <input type="checkbox" id="deviceSwap" onchange="updateFraudReduction()"> Device Swap
+        </div>
+    </div>
+
+    <!-- Calculator and Results Container -->
+    <div class="flex-container">
+        <!-- Calculator form -->
+        <div class="calculator">
+            <h2> Fraud Calculator </h2>
+
+            <label for="averageLoss">Average Fraud Loss per Incident ($):</label>
+            <input type="number" id="averageLoss" value="10000">
+
+            <label for="incidentVolume">Volume of Fraud Incidents per Year:</label>
+            <input type="number" id="incidentVolume" value="500">
+
+            <label for="reductionPercentage">Fraud Reduction Percentage (%):</label>
+            <input type="number" id="reductionPercentage" value="70" oninput="manualUpdateFraudReduction()">
+
+            <label for="solutionCost">Annual Cost of Solution ($):</label>
+            <input type="number" id="solutionCost" value="600000">
+
+            <button onclick="calculateValue()">Calculate Value</button>
+        </div>
+
+        <!-- Result section -->
+        <div class="result" id="results" style="display:none;">
+            <h3>Calculation Results</h3>
+        </div>
+    </div>
+
+    <script>
+        let manuallySet = false;
+        let baseReductionPercentage = 70; // Default fraud reduction starting percentage
+        const increment = 3; // Increment percentage for each additional selected API after the first one
+
+        // Update fraud reduction based on selected APIs
+        function updateFraudReduction() {
+            let selectedAPIs = 0;
+            if (document.getElementById('simSwapAPI').checked) selectedAPIs++;
+            if (document.getElementById('numberRecycle').checked) selectedAPIs++;
+            if (document.getElementById('simActivity').checked) selectedAPIs++;
+            if (document.getElementById('imeiFraud').checked) selectedAPIs++;
+            if (document.getElementById('deviceSwap').checked) selectedAPIs++;
+
+            // Start from either manually set value or base reduction percentage
+            const fraudReduction = manuallySet 
+                ? parseFloat(document.getElementById('reductionPercentage').value) 
+                : baseReductionPercentage;
+
+            // Only apply increments if more than one API is selected
+            document.getElementById('reductionPercentage').value = fraudReduction + (selectedAPIs > 1 ? (selectedAPIs - 1) * increment : 0);
+        }
+
+        // Allow user to manually set fraud reduction percentage and use it as new base
+        function manualUpdateFraudReduction() {
+            manuallySet = true;
+            baseReductionPercentage = parseFloat(document.getElementById('reductionPercentage').value) || baseReductionPercentage;
+        }
+
+        // Calculate the value and show results
+        function calculateValue() {
+            var averageLoss = parseFloat(document.getElementById('averageLoss').value) || 0;
+            var incidentVolume = parseFloat(document.getElementById('incidentVolume').value) || 0;
+            var reductionPercentage = parseFloat(document.getElementById('reductionPercentage').value) || 0;
+            var solutionCost = parseFloat(document.getElementById('solutionCost').value) || 0;
+
+            var currentAnnualFraudLosses = averageLoss * incidentVolume;
+            var annualFraudSavings = currentAnnualFraudLosses * (reductionPercentage / 100);
+            var netAnnualBenefit = annualFraudSavings - solutionCost;
+            var roi = (netAnnualBenefit / solutionCost) * 100;
+            var paybackPeriod = (solutionCost / annualFraudSavings) * 12;
+
+            roi = roi < 0 ? 0 : roi;
+            paybackPeriod = paybackPeriod < 0 ? 0 : paybackPeriod;
+
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML =
+                '<h3>Calculation Results</h3>' +
+                '<p><strong>Current Annual Fraud Losses:</strong> $' + numberWithCommas(currentAnnualFraudLosses.toFixed(2)) + '</p>' +
+                '<p><strong>Annual Fraud Savings:</strong> $' + numberWithCommas(annualFraudSavings.toFixed(2)) + '</p>' +
+                '<p><strong>Net Annual Benefit:</strong> $' + numberWithCommas(netAnnualBenefit.toFixed(2)) + '</p>' +
+                '<p><strong>Return on Investment (ROI):</strong> ' + roi.toFixed(2) + '%</p>' +
+                '<p><strong>Payback Period:</strong> ' + paybackPeriod.toFixed(2) + ' months</p>';
+        }
+
+        // Format numbers with commas
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    </script>
+</body>
+</html>
+
+
+

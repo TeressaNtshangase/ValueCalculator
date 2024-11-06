@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>s-MNV Onboarding Value Calculator</title>
+    <script src="https://alcdn.msauth.net/browser/2.27.0/js/msal-browser.min.js"></script>
+    <script src="script/authConfig.js"></script>
+   <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #141D26; /* Dark navy */
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar with Logo, Brand, and Back Arrow */
+        .navbar {
+            background-color: #81BCB3;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .back-arrow {
+            cursor: pointer;
+            font-size: 24px;
+            color: black;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        /* Main content layout */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 50px;
+        }
+
+        /* Calculator form */
+        .container {
+            width: 600px; /* Increased width for larger screens */
+            background-color: #ffffff;
+            padding: 40px 50px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333333;
+            font-size: 1.8rem;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            color: #555555;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 30px;
+            width: 100%;
+            padding: 15px;
+            background-color: #81BCB3;
+            border: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Use case options section */
+        .api-container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .api-item {
+            display: inline-block;
+            margin: 10px;
+            background-color: #81BCB3;
+            color: black;
+            padding: 20px 40px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .api-item:hover {
+            background-color: #6a9e9a;
+        }
+
+        /* Result section with central spacing */
+        .result-container {
+            width: 320px;
+            margin-left: 80px;
+            margin-top: 50px;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            color: #333333;
+        }
+
+        .result-container h3 {
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .result p {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <span class="back-arrow" onclick="window.history.back()">←</span>
+        <div class="logo-container">
+            <a href="mtnapi.html"> <!-- Link to mtnapi page -->
+                <img src="img/chenosislogo.png" alt="Chenosis Logo" class="logo">
+            </a>
+        </div>
+    </div>
+    
+    <!-- Use Case options section -->
+    <div class="api-container">
+        <div class="api-item" onclick="navigateTo('smnvonboarding.html')">
+            Onboarding
+        </div>
+        <div class="api-item" onclick="navigateTo('smnvlogin.html')">
+            Login Authentication
+        </div>
+        <div class="api-item" onclick="navigateTo('smnvpayverification.html')">
+            Pay Verification
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+          
+
+            <label for="traditionalOtpCost">Cost per OTP Verification ($):</label>
+            <input type="number" id="traditionalOtpCost" value="0.10" step="0.01">
+
+            <label for="onboardingVolume">Number of Onboarded Users per Year:</label>
+            <input type="number" id="onboardingVolume" value="50000">
+
+            <label for="otpTime">Average Time per OTP Verification (seconds):</label>
+            <input type="number" id="otpTime" value="30">
+
+            <label for="smnvTime">Average Time per s-MNV Verification (seconds):</label>
+            <input type="number" id="smnvTime" value="5">
+
+            <label for="smnvCost">Annual Cost of s-MNV Solution ($):</label>
+            <input type="number" id="smnvCost" value="15000">
+
+            <button onclick="calculateSavings()">Calculate Savings</button>
+        </div>
+
+        <div class="result-container" id="result" style="display: none;">
+            <h3>Calculation Results</h3>
+            <p><strong>Total Cost of OTP:</strong> <span id="totalOtpCost"></span></p>
+            <p><strong>Annual Cost of s-MNV:</strong> <span id="annualSmnvCost"></span></p>
+            <p><strong>Estimated Savings with s-MNV:</strong> <span id="savings"></span></p>
+            <p><strong>Time Used for OTP:</strong> <span id="totalOtpTime"></span></p>
+            <p><strong>Time Saved with s-MNV:</strong> <span id="timeSavings"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            window.location.href = page; // Navigate to the specified page
+        }
+
+        function calculateSavings() {
+            // Get input values
+            let traditionalOtpCost = parseFloat(document.getElementById('traditionalOtpCost').value);
+            let onboardingVolume = parseFloat(document.getElementById('onboardingVolume').value);
+            let otpTime = parseFloat(document.getElementById('otpTime').value);
+            let smnvTime = parseFloat(document.getElementById('smnvTime').value);
+            let smnvCost = parseFloat(document.getElementById('smnvCost').value);
+
+            // Calculate total OTP cost per year
+            let totalOtpCost = traditionalOtpCost * onboardingVolume;
+
+            // Calculate estimated savings
+            let savings = totalOtpCost - smnvCost;
+
+            // Calculate time used for OTP
+            let totalOtpTime = (otpTime * onboardingVolume);  // In seconds
+
+            // Calculate time savings
+            let totalSmnvTime = (smnvTime * onboardingVolume);  // In seconds
+            let timeSavings = totalOtpTime - totalSmnvTime;
+
+            // Convert time to hours, minutes, seconds
+            function formatTime(totalSeconds) {
+                let hours = Math.floor(totalSeconds / 3600);
+                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                let seconds = totalSeconds % 60;
+                return `${hours}h ${minutes}m ${seconds}s`;
+            }
+
+            // Display the results
+            document.getElementById('totalOtpCost').innerText = '$' + totalOtpCost.toFixed(2);
+            document.getElementById('annualSmnvCost').innerText = '$' + smnvCost.toFixed(2);
+            document.getElementById('savings').innerText = '$' + savings.toFixed(2);
+            document.getElementById('totalOtpTime').innerText = formatTime(totalOtpTime);
+            document.getElementById('timeSavings').innerText = formatTime(timeSavings);
+            document.getElementById('result').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
+

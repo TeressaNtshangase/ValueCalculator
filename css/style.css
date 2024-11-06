@@ -1,0 +1,135 @@
+/* Global Styles */
+body {
+    background-color: #2c2c2c; /* Light black background */
+    color: white; /* White text color */
+    font-family: Arial, sans-serif; /* Optional: Set a clean font */
+}
+
+/* Loader Styles */
+#loader-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#loader {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+.loader-section {
+    position: fixed;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    background: #3498db; /* Blue */
+    z-index: 9998;
+}
+
+.loader-section.section-left {
+    left: 0;
+}
+
+.loader-section.section-right {
+    right: 0;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #343a40; /* Dark background */
+}
+
+.navbar a {
+    color: #ffffff !important;
+}
+
+/* Hero Section */
+.tm-hero {
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    margin-bottom: 60px;
+}
+
+/* Search Form Styles */
+.tm-search-form {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Gallery Styles */
+.tm-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.tm-video-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.tm-video-item img {
+    width: 100%;
+    height: auto;
+}
+
+.tm-video-item figcaption {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tm-video-item:hover figcaption {
+    opacity: 1;
+}
+
+/* Footer Styles */
+.tm-footer {
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 20px 0;
+}
+
+/* Button Styles */
+.perform-calculation-btn {
+    background-color: #4AC5BB; /* Button background color */
+    color: #fff; /* Text color */
+    padding: 10px 20px; /* Padding for size */
+    border-radius: 50px; /* Rounded corners */
+    border: none; /* Remove any default border */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.perform-calculation-btn:hover {
+    background-color: #3ba89c; /* Slightly darker on hover */
+}

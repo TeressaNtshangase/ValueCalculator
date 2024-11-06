@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://alcdn.msauth.net/browser/2.27.0/js/msal-browser.min.js"></script>
+    <script src="script/authConfig.js"></script>
+    <title>KYC Value Calculator</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #141D26;
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar with Logo and Brand */
+        .navbar {
+            background-color: #81BCB3;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .back-arrow {
+            font-size: 24px;
+            color: black;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .container {
+            width: 600px;
+            background-color: #ffffff;
+            padding: 40px 50px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            color: #333333;
+        }
+
+        h2 {
+            color: #333333;
+            font-size: 1.8rem;
+        }
+
+        p.description {
+            font-size: 1rem;
+            color: #555555;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            color: #555555;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 30px;
+            width: 100%;
+            padding: 15px;
+            background-color: #81BCB3;
+            border: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Result section */
+        .result-container {
+            width: 320px;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            color: #333333;
+            margin-left: 50px;  /* Add margin to separate from form */
+            display: none;
+        }
+
+        .result-container h3 {
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .result p {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <span class="back-arrow" onclick="window.history.back()">←</span>
+        <div class="logo-container">
+            <a href="partnerapi.html">
+                <img src="img/chenosislogo.png" alt="Chenosis Logo" class="logo">
+            </a>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <!-- Form Container -->
+        <div class="container">
+            <label for="customersOnboarded">Customers Onboarded per Month:</label>
+            <input type="number" id="customersOnboarded" value="1000">
+
+            <label for="manualVerificationTime">Manual Verification Time per Customer (minutes):</label>
+            <input type="number" id="manualVerificationTime" value="10">
+
+            <label for="manualVerificationCost">Cost per Manual Verification ($):</label>
+            <input type="number" id="manualVerificationCost" value="5">
+
+            <label for="errorReduction">Error Reduction with KYC (%):</label>
+            <input type="number" id="errorReduction" value="80">
+
+            <label for="fraudLosses">Fraud-related Losses per Month ($):</label>
+            <input type="number" id="fraudLosses" value="2000">
+
+            <label for="fraudReduction">Expected Fraud Reduction with KYC Verify (%):</label>
+            <input type="number" id="fraudReduction" value="50">
+
+            <button onclick="calculateKYCValue()">Calculate Value</button>
+        </div>
+
+        <!-- Result Container on the right -->
+        <div class="result-container" id="results">
+            <h3>Calculation Results</h3>
+            <p><strong>Total Manual Time Saved:</strong> <span id="manualTimeSaved"></span></p>
+            <p><strong>Cost Savings from Automation:</strong> <span id="costSavings"></span></p>
+            <p><strong>Error Reduction Savings:</strong> <span id="errorReductionSavings"></span></p>
+            <p><strong>Fraud Prevention Savings:</strong> <span id="fraudPreventionSavings"></span></p>
+            <p><strong>Total Monthly Savings:</strong> <span id="totalSavings"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateKYCValue() {
+            var customersOnboarded = parseFloat(document.getElementById('customersOnboarded').value) || 0;
+            var manualVerificationTime = parseFloat(document.getElementById('manualVerificationTime').value) || 0;
+            var manualVerificationCost = parseFloat(document.getElementById('manualVerificationCost').value) || 0;
+            var errorReduction = parseFloat(document.getElementById('errorReduction').value) || 0;
+            var fraudLosses = parseFloat(document.getElementById('fraudLosses').value) || 0;
+            var fraudReduction = parseFloat(document.getElementById('fraudReduction').value) || 0;
+
+            // Calculations
+            var totalManualTime = (customersOnboarded * manualVerificationTime) / 60; // in hours
+            var timeSaved = totalManualTime;
+            var costSavings = customersOnboarded * manualVerificationCost;
+            var errorReductionSavings = (costSavings * errorReduction) / 100;
+            var fraudPreventionSavings = (fraudLosses * fraudReduction) / 100;
+            var totalSavings = costSavings + errorReductionSavings + fraudPreventionSavings;
+
+            // Display results
+            var resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            document.getElementById('manualTimeSaved').innerHTML = totalManualTime.toFixed(2) + ' hours';
+            document.getElementById('costSavings').innerHTML = '$' + numberWithCommas(costSavings.toFixed(2));
+            document.getElementById('errorReductionSavings').innerHTML = '$' + numberWithCommas(errorReductionSavings.toFixed(2));
+            document.getElementById('fraudPreventionSavings').innerHTML = '$' + numberWithCommas(fraudPreventionSavings.toFixed(2));
+            document.getElementById('totalSavings').innerHTML = '$' + numberWithCommas(totalSavings.toFixed(2));
+        }
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    </script>
+
+</body>
+</html>
+
+

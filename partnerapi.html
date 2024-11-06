@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner APIs</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://alcdn.msauth.net/browser/2.27.0/js/msal-browser.min.js"></script>
+    <script src="script/authConfig.js"></script>
+   <style>
+        /* General Page Styles */
+        body {
+            background-color: #141D1E;
+            color: #FFFFFF;
+        }
+        .navbar {
+            background-color: #141D1E;
+            padding: 15px;
+        }
+        /* Logo and Home Icon styling */
+        .logo-img, .fa-home {
+            width: 24px;
+            height: 24px;
+            color: #81BCB3;
+        }
+        .header {
+            color: #FFFFFF;
+            margin: 20px 0;
+        }
+        .product-card {
+            height: 200px;
+            background-color: #1A2632;
+            border: none;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        /* Ensuring card title text color is white */
+        .product-card .card-title {
+            color: #FFFFFF;
+        }
+        .btn-custom {
+            background-color: #81BCB3;
+            color: white;
+            font-weight: bold;
+            border: 2px solid #00FFC0;
+            border-radius: 20px;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-custom:hover {
+            background-color: #6a9e9a;
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-light">
+    <div class="container d-flex align-items-center">
+        <!-- Home Icon -->
+        <a href="index.html" class="mr-3">
+            <i class="fas fa-home logo-img"></i>
+        </a>
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+            <img src="img/chenosislogo.png" alt="Logo" class="logo-img">
+        </a>
+    </div>
+</nav>
+
+<!-- Heading -->
+<div class="header text-center">
+    <h2>Partner APIs</h2>
+</div>
+
+<!-- Carousel for API cards -->
+<div id="apiCarousel" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner container">
+        <!-- First Row of APIs -->
+        <div class="carousel-item active">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card product-card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">USSD Signature API</h5>
+                            <a href="ussdsignature.html" class="btn btn-custom">Select</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card product-card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">E-Signature API</h5>
+                            <a href="esignature.html" class="btn btn-custom">Select</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card product-card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Know Your Business (KYB)</h5>
+                            <a href="KYBAPI.html" class="btn btn-custom">Select</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card product-card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Know Your Customer (KYC) API</h5>
+                            <a href="kyc.html" class="btn btn-custom">Select</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Second Row of APIs -->
+        <div class="carousel-item">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card product-card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Identity Verification API</h5>
+                            <a href="identityvalidationapi.html" class="btn btn-custom">Select</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card product-card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Proof Of Address API</h5>
+                            <a href="proofofaddressapi.html" class="btn btn-custom">Select</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card product-card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Customer Affordability API</h5>
+                            <a href="customeraffordabilityapi.html" class="btn btn-custom">Select</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add more API cards here as needed -->
+            </div>
+        </div>
+    </div>
+    <!-- Carousel navigation -->
+    <a class="carousel-control-prev" href="#apiCarousel" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#apiCarousel" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USSD Signature Calculator</title>
+    <script src="https://alcdn.msauth.net/browser/2.27.0/js/msal-browser.min.js"></script>
+    <script src="script/authConfig.js"></script>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #141D26; /* Dark navy */
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar with Logo and Brand */
+        .navbar {
+            background-color: #81BCB3;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Align items to the left */
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-left: 10px; /* Add some space to the left */
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Back Arrow Button */
+        .back-arrow {
+            font-size: 24px;
+            color: black; /* Change arrow color to black */
+            cursor: pointer; /* Change cursor to pointer */
+            margin-right: 10px; /* Add space between arrow and brand */
+        }
+
+        /* Main content layout */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 50px;
+        }
+
+        /* Calculator form */
+        .container {
+            width: 600px;
+            background-color: #ffffff;
+            padding: 40px 50px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            color: #333333;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333333;
+            font-size: 1.8rem;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            color: #555555;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 30px;
+            width: 100%;
+            padding: 15px;
+            background-color: #81BCB3;
+            border: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Use case options section */
+        .api-container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .api-item {
+            display: inline-block;
+            margin: 10px;
+            background-color: #81BCB3;
+            color: black;
+            padding: 20px 40px;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .api-item:hover {
+            background-color: #6a9e9a;
+        }
+
+        /* Result section */
+        .result-container {
+            width: 320px;
+            margin-left: 80px;
+            margin-top: 50px;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            color: #333333;
+        }
+
+        .result-container h3 {
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .result p {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <span class="back-arrow" onclick="window.history.back()">←</span>
+        <div class="logo-container">
+            <a href="partnerapi.html"> 
+                <img src="img/chenosislogo.png" alt="Chenosis Logo" class="logo">
+            </a>
+        </div>
+    </div>
+
+    <!-- Use case options section -->
+    <div class="api-container">
+        <a href="esignature.html" class="api-item">E-signature </a>
+        <a href="ussdsignature.html" class="api-item">USSD Signature</a>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            
+            <label for="ussdCost">Cost per USSD Signature ($):</label>
+            <input type="number" id="ussdCost" value="0.05" step="0.01">
+
+            <label for="signatureVerifications">Number of USSD Signatures per Year:</label>
+            <input type="number" id="signatureVerifications" value="50000">
+
+            <label for="alternativeCost">Annual Cost of Alternative Solution ($):</label>
+            <input type="number" id="alternativeCost" value="15000">
+
+            <label for="ussdTime">Average Time per USSD Signature (seconds):</label>
+            <input type="number" id="ussdTime" value="10">
+
+            <label for="alternativeTime">Average Time per Alternative Signature (seconds):</label>
+            <input type="number" id="alternativeTime" value="20">
+
+            <button onclick="calculateSavings()">Calculate Savings</button>
+        </div>
+
+        <div class="result-container" id="result" style="display: none;">
+            <h3>Calculation Results</h3>
+            <p><strong>Total USSD Signature Cost:</strong> <span id="totalUssdCost"></span> USD</p>
+            <p><strong>Total Savings:</strong> <span id="totalSavings"></span> USD</p>
+            <p><strong>Time Saved:</strong> <span id="timeSavings"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function calculateSavings() {
+            // Get input values
+            let ussdCost = parseFloat(document.getElementById('ussdCost').value);
+            let signatureVerifications = parseFloat(document.getElementById('signatureVerifications').value);
+            let alternativeCost = parseFloat(document.getElementById('alternativeCost').value);
+            let ussdTime = parseFloat(document.getElementById('ussdTime').value);
+            let alternativeTime = parseFloat(document.getElementById('alternativeTime').value);
+
+            // Calculate total USSD signature cost per year
+            let totalUssdCost = ussdCost * signatureVerifications;
+
+            // Calculate total savings (cost savings)
+            let totalSavings = totalUssdCost - alternativeCost;
+
+            // Calculate time savings
+            let totalUssdTime = ussdTime * signatureVerifications;  // Total time in seconds
+            let totalAlternativeTime = alternativeTime * signatureVerifications;  // Total time in seconds
+            let timeSavings = totalAlternativeTime - totalUssdTime;  // Time saved in seconds
+
+            // Convert time savings to hours, minutes, and seconds
+            let hours = Math.floor(timeSavings / 3600);
+            let minutes = Math.floor((timeSavings % 3600) / 60);
+            let seconds = timeSavings % 60;
+
+            // Display the results
+            document.getElementById('totalUssdCost').innerText = '$' + totalUssdCost.toFixed(2);
+            document.getElementById('totalSavings').innerText = '$' + totalSavings.toFixed(2);
+            document.getElementById('timeSavings').innerText = hours + ' hours, ' + minutes + ' minutes, ' + seconds + ' seconds';
+            document.getElementById('result').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
